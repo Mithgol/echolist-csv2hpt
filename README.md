@@ -4,8 +4,6 @@ This package (`echolist-csv2hpt`) is a CLI tool that copies Fidonet echomail 
 
 It requires [Node.js](http://nodejs.org/) to run and [npm](https://www.npmjs.org/) to be installed.
 
-This package is currently in an early phase of its development and thus does not have the desired level of feature completeness.
-
 ## Installing echolist-csv2hpt
 
 [![(npm package version)](https://nodei.co/npm/echolist-csv2hpt.png?downloads=true&downloadRank=true)](https://npmjs.org/package/echolist-csv2hpt)
