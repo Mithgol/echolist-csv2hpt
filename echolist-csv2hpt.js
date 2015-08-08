@@ -50,6 +50,11 @@ if( params.length < 2 ){
       clog('По умолчанию используется кодировка CP866 (обычная на системе');
       clog('Windows в российском Фидонете, так что она употребляется');
       clog('наиболее часто).');
+      clog('');
+      clog('Можно указать несколько параметров inputCSV пред заключительным');
+      clog('параметром configHPT. Описания областей эхопочты из более');
+      clog('ранних параметров inputCSV получают приоритет над описаниями');
+      clog('областей эхопочты из дальнейших параметров inputCSV.');
    } else {
       clog('Usage:');
       clog('   echolist-csv2hpt inputCSV configHPT');
@@ -72,15 +77,20 @@ if( params.length < 2 ){
       clog('');
       clog('CP866 is the default encoding (it is used by Windows users');
       clog('in Russian Fidonet, which is the largest use case).');
+      clog('');
+      clog('Several inputCSV parameters can be given before the final');
+      clog('configHPT parameter. Echomail area descriptions from the');
+      clog('earlier inputCSV parameters take precedence over the echomail');
+      clog('area descriptions from the latter inputCSV parameters.');
    }
    process.exit(1);
 }
 
-var filenameCSV = params[0];
-var filenameHPT = params[1];
+var filenameHPT = params.pop();
+var filenamesCSV = params;
 
 thisAPI(
-   filenameCSV,
+   filenamesCSV,
    filenameHPT,
    {
       rusMode: rusMode,

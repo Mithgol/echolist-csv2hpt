@@ -6,7 +6,8 @@ require('iconv-lite').extendNodeEncodings();
 
 var clog = console.log;
 
-var readFileOrDie = function(filename, encoding, rusMode){
+// tribute to the “R.O.D” 2001—2002 anime OVA
+var readOrDie = function(filename, encoding, rusMode){
    try {
       return fs.readFileSync(filename, {encoding: encoding});
    } catch(err) {
@@ -21,7 +22,7 @@ var readFileOrDie = function(filename, encoding, rusMode){
    }
 };
 
-var writeFileOrDie = function(filename, content, encoding, rusMode){
+var writeOrDie = function(filename, content, encoding, rusMode){
    try {
       fs.writeFileSync(filename, content, {encoding: encoding});
    } catch(err) {
@@ -36,41 +37,47 @@ var writeFileOrDie = function(filename, content, encoding, rusMode){
    }
 };
 
-module.exports = function(filenameCSV, filenameHPT, options){
-   filenameCSV = path.resolve(__dirname, filenameCSV);
+module.exports = function(filenamesCSV, filenameHPT, options){
+   filenamesCSV = filenamesCSV.map(function(nextFilename){
+      return path.resolve(__dirname, nextFilename);
+   });
    filenameHPT = path.resolve(__dirname, filenameHPT);
 
-   var contentCSV = readFileOrDie(
-      filenameCSV, options.inputEncoding, options.rusMode
-   ).split(/(?:\r|\n)+/).map(function(nextLine){
-      if( nextLine.length < 1 ) return null; // empty line
-      if( nextLine.indexOf(';') === 0 ) return null; // comment line
+   var contentCSV = filenamesCSV.map(function(nextFilename){
+      return readOrDie(
+         nextFilename, options.inputEncoding, options.rusMode
+      ).split(/(?:\r|\n)+/).map(function(nextLine){
+         if( nextLine.length < 1 ) return null; // empty line
+         if( nextLine.indexOf(';') === 0 ) return null; // comment line
 
-      var lineParts = nextLine.split(',');
-      if( lineParts.length !== 6 ){
-         clog('');
-         if( options.rusMode ){
-            clog('Обнаружена строка с неожиданным количеством запятых:');
-         } else {
-            clog('A line with unexpected number of commas is detected:');
+         var lineParts = nextLine.split(',');
+         if( lineParts.length !== 6 ){
+            clog('');
+            if( options.rusMode ){
+               clog('В файле ' + nextFilename);
+               clog('обнаружена строка с неожиданным количеством запятых:');
+            } else {
+               clog('In the file ' + nextFilename);
+               clog('a line with unexpected number of commas is detected:');
+            }
+            clog(nextLine);
+            if( options.rusMode ){
+               clog('Эта строка проигнорирована.');
+            } else {
+               clog('That line is ignored.');
+            }
+            return null; // weird line
          }
-         clog(nextLine);
-         if( options.rusMode ){
-            clog('Эта строка проигнорирована.');
-         } else {
-            clog('That line is ignored.');
-         }
-         return null; // weird line
-      }
-      return {
-         echotag: lineParts[1],
-         description: lineParts[2].replace(/"/g, '') // prevent double quotes
-      };
-   }).filter(function(nextLine){
-      return nextLine !== null;
+         return {
+            lcEchotag: lineParts[1].toLowerCase(),
+            description: lineParts[2].replace(/"/g, '') // kill double quotes
+         };
+      }).filter(function(nextLine){
+         return nextLine !== null;
+      });
    });
 
-   var contentHPT = readFileOrDie(
+   var contentHPT = readOrDie(
       filenameHPT, options.outputEncoding, options.rusMode
    ).split(/([\r\n]+)/).map(function(nextLine, idx){
       if( idx % 2 === 1 ) return nextLine; // line separator's index: 1, 3, 5…
@@ -92,9 +99,10 @@ module.exports = function(filenameCSV, filenameHPT, options){
 
       if( !echoAreaLine ) return nextLine; // not an echoarea line
 
-      // do not attempt anything if an echoarea line already has a description
-      if( lineParts.indexOf('-d') > -1 ) return nextLine;
-      if( lineParts.indexOf('-D') > -1 ) return nextLine;
+      if( lineParts.indexOf('-d') > -1 || lineParts.indexOf('-D') > -1 ){
+         // this echoarea line already has a description
+         /*if(!( options.replaceMode ))*/ return nextLine;
+      }
 
       var echotagIDX, pathIDX;
       if( lineParts[0].length > 0 ){
@@ -104,18 +112,24 @@ module.exports = function(filenameCSV, filenameHPT, options){
          echotagIDX = 4;
          pathIDX = 6;
       }
+      var lcEchotagHPT = lineParts[echotagIDX].toLowerCase();
 
-      var descriptionElement = contentCSV.find(function(elementCSV){
-         return elementCSV.echotag.toLowerCase() ===
-            lineParts[echotagIDX].toLowerCase();
-      });
+      var descriptionElement = contentCSV.map(function(fileCSV){
+         var foundElement = fileCSV.find(function(elementCSV){
+            return elementCSV.lcEchotag === lcEchotagHPT;
+         });
+         if( typeof foundElement === 'undefined' ) return null;
+         return foundElement;
+      }).filter(function(nextElement){
+         return nextElement !== null;
+      })[0];
       if( typeof descriptionElement === 'undefined' ) return nextLine;
 
       lineParts[pathIDX] += ' -d "' + descriptionElement.description + '"';
       return lineParts.join('');
    }).join('');
 
-   writeFileOrDie(
+   writeOrDie(
       filenameHPT, contentHPT, options.outputEncoding, options.rusMode
    );
    clog('');
