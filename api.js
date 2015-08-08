@@ -37,6 +37,18 @@ var writeOrDie = function(filename, content, encoding, rusMode){
    }
 };
 
+var getDescriptionElementFromContentCSV = function(contentCSV, lcEchotag){
+   return contentCSV.map(function(fileCSV){
+      var foundElement = fileCSV.find(function(elementCSV){
+         return elementCSV.lcEchotag === lcEchotag;
+      });
+      if( typeof foundElement === 'undefined' ) return null;
+      return foundElement;
+   }).filter(function(nextElement){
+      return nextElement !== null;
+   })[0];
+};
+
 module.exports = function(filenamesCSV, filenameHPT, options){
    filenamesCSV = filenamesCSV.map(function(nextFilename){
       return path.resolve(__dirname, nextFilename);
@@ -99,9 +111,47 @@ module.exports = function(filenamesCSV, filenameHPT, options){
 
       if( !echoAreaLine ) return nextLine; // not an echoarea line
 
+      var lcEchotagHPT;
       if( lineParts.indexOf('-d') > -1 || lineParts.indexOf('-D') > -1 ){
          // this echoarea line already has a description
-         /*if(!( options.replaceMode ))*/ return nextLine;
+         if(!( options.replaceMode )) return nextLine;
+
+         // entered the mode of replacement
+         var parts = /^(\s*EchoArea\s+)(\S+)(\s.+\s-d\s+")([^"]+)(".*)$/.exec(
+            nextLine
+         );
+         if( parts === null ){
+            clog('');
+            if( options.rusMode ){
+               clog('В файле ' + filenameHPT);
+               clog('обнаружен неожиданный формат описания области:');
+            } else {
+               clog('In the file ' + filenameHPT);
+               clog('an unexpected format of area description is detected:');
+            }
+            clog(nextLine);
+            if( options.rusMode ){
+               clog('Эта строка проигнорирована.');
+            } else {
+               clog('That line is ignored.');
+            }
+            return nextLine;
+         }
+
+         lcEchotagHPT = parts[2].toLowerCase();
+
+         var elDescription = getDescriptionElementFromContentCSV(
+            contentCSV, lcEchotagHPT
+         );
+         if( typeof elDescription === 'undefined' ) return nextLine;
+
+         return [
+            parts[1], // EchoArea
+            parts[2], // an echotag
+            parts[3], // pre-description
+            elDescription.description,
+            parts[5] // post-description
+         ].join('');
       }
 
       var echotagIDX, pathIDX;
@@ -112,17 +162,11 @@ module.exports = function(filenamesCSV, filenameHPT, options){
          echotagIDX = 4;
          pathIDX = 6;
       }
-      var lcEchotagHPT = lineParts[echotagIDX].toLowerCase();
+      lcEchotagHPT = lineParts[echotagIDX].toLowerCase();
 
-      var descriptionElement = contentCSV.map(function(fileCSV){
-         var foundElement = fileCSV.find(function(elementCSV){
-            return elementCSV.lcEchotag === lcEchotagHPT;
-         });
-         if( typeof foundElement === 'undefined' ) return null;
-         return foundElement;
-      }).filter(function(nextElement){
-         return nextElement !== null;
-      })[0];
+      var descriptionElement = getDescriptionElementFromContentCSV(
+         contentCSV, lcEchotagHPT
+      );
       if( typeof descriptionElement === 'undefined' ) return nextLine;
 
       lineParts[pathIDX] += ' -d "' + descriptionElement.description + '"';

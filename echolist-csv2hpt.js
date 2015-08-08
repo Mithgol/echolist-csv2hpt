@@ -10,6 +10,7 @@ params.shift(); // 'echolist-csv2hpt'
 var inputEncoding = 'cp866';
 var outputEncoding = 'cp866';
 var rusMode = false;
+var replaceMode = false;
 params = params.filter(function(nextParam){
    if( nextParam.indexOf('--input=') === 0 ){
       inputEncoding = nextParam.slice('--input='.length);
@@ -19,6 +20,9 @@ params = params.filter(function(nextParam){
       return false;
    } else if( nextParam.toLowerCase() === '--rus' ){
       rusMode = true;
+      return false;
+   } else if( nextParam.toLowerCase() === '--replace' ){
+      replaceMode = true;
       return false;
    }
 
@@ -41,6 +45,12 @@ if( params.length < 2 ){
       clog('употребление русских сообщений вместо английских.');
       clog('');
       clog('(Воздействует только на вывод в консоли, не на выходной файл.)');
+      clog('');
+      clog('Необязательный параметр "--replace" предписывает приложению');
+      clog('заменять описания эхопочты в файле конфигурации областей');
+      clog('эхопочты HPT. (Без "--replace" описания из CSV используются');
+      clog('только для областей эхопочты, не описанных в файле конфигурации');
+      clog('областей эхопочты HPT заранее.)');
       clog('');
       clog('Необязательные параметры "--input=CP866" и "--output=CP866"');
       clog('задают кодировки входного (CSV) и выходного (HPT) файла.');
@@ -70,6 +80,12 @@ if( params.length < 2 ){
       clog('');
       clog('(It only affects console output, not the output file.)');
       clog('');
+      clog('An optional "--replace" parameter dictates the application');
+      clog('to replace echomail descriptions inside the HPT echomail area');
+      clog('configuration file. (Without "--replace" desciptions from CSV');
+      clog('are used only for the echomail areas that are not described in');
+      clog('HPT echomail area configuration file beforehand.)');
+      clog('');
       clog('Optional parameters "--input=CP866" and "--output=CP866" define');
       clog('the encodings of input (CSV) and output (HPT) file. Encodings');
       clog('supported by https://github.com/ashtuchkin/iconv-lite can be');
@@ -94,6 +110,7 @@ thisAPI(
    filenameHPT,
    {
       rusMode: rusMode,
+      replaceMode: replaceMode,
       inputEncoding: inputEncoding,
       outputEncoding: outputEncoding
    }
