@@ -24,6 +24,12 @@ You may now move that directory (for example, on a flash drive) across syst
 
 Unlike the above (`npm -g`), the application does not appear in the `PATH`, and thus you'll have to run it directly from the application's directory. You'll also have to run `node echolist-csv2hpt [parameters]` instead of `echolist-csv2hpt [parameters]`.
 
+## Running echolist-csv2hpt
+
+You may run `echolist-csv2hpt` without parameters to get help about its command line arguments.
+
+(Run `echolist-csv2hpt --rus` to get Russian help instead of English.)
+
 ## Locking files
 
 The application **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The application's user should control the access to the HPT's configuration.
