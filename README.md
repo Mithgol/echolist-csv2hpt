@@ -3,8 +3,6 @@
 This package (`echolist-csv2hpt`) is a CLI tool that copies Fidonet echomail area descriptions from a CSV echolist to an HPT areas file.
 
 It requires [Node.js](http://nodejs.org/) to run and [npm](https://www.npmjs.org/) to be installed.
-* Currently only Node.js version 0.10.x or 0.12.x is supported.
-* The latest stable [io.js](https://iojs.org/) or Node v4.0.x are not supported because they are [not backwards-compatible](https://github.com/nodejs/node/issues/2835) with older interfaces currently used by [`iconv-lite`](https://www.npmjs.com/package/iconv-lite).
 
 ## Installing echolist-csv2hpt
 
