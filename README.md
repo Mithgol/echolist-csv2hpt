@@ -3,6 +3,8 @@
 This package (`echolist-csv2hpt`) is a CLI tool that copies Fidonet echomail area descriptions from a CSV echolist to an HPT areas file.
 
 It requires [Node.js](http://nodejs.org/) to run and [npm](https://www.npmjs.org/) to be installed.
+* Starting from v1.0.0, this module requires Node.js version 4.0.0 or newer.
+* You may run older versions of this module in Node.js version 0.10.x or 0.12.x. These older versions, however, had to contain an additional dependency ([`array.prototype.find`](https://www.npmjs.com/package/array.prototype.find)) as a polyfill for a missing [ECMAScript 2015 (ES6) feature](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) which is now a part of Node.js.
 
 ## Installing echolist-csv2hpt
 

@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 
-require('array.prototype.find');
 require('iconv-lite').extendNodeEncodings();
 
 var clog = console.log;
