@@ -38,20 +38,18 @@ var writeOrDie = function(filename, content, encoding, rusMode){
 
 var getDescriptionElementFromContentCSV = function(contentCSV, lcEchotag){
    return contentCSV.map(function(fileCSV){
-      var foundElement = fileCSV.find(function(elementCSV){
-         return elementCSV.lcEchotag === lcEchotag;
-      });
+      var foundElement = fileCSV.find(
+         elementCSV => elementCSV.lcEchotag === lcEchotag
+      );
       if( typeof foundElement === 'undefined' ) return null;
       return foundElement;
-   }).filter(function(nextElement){
-      return nextElement !== null;
-   })[0];
+   }).filter( nextElement => nextElement !== null )[0];
 };
 
 module.exports = function(filenamesCSV, filenameHPT, options){
-   filenamesCSV = filenamesCSV.map(function(nextFilename){
-      return path.resolve(__dirname, nextFilename);
-   });
+   filenamesCSV = filenamesCSV.map(
+      nextFilename => path.resolve(__dirname, nextFilename)
+   );
    filenameHPT = path.resolve(__dirname, filenameHPT);
 
    var contentCSV = filenamesCSV.map(function(nextFilename){
@@ -83,9 +81,7 @@ module.exports = function(filenamesCSV, filenameHPT, options){
             lcEchotag: lineParts[1].toLowerCase(),
             description: lineParts[2].replace(/"/g, '') // kill double quotes
          };
-      }).filter(function(nextLine){
-         return nextLine !== null;
-      });
+      }).filter( nextLine => nextLine !== null );
    });
 
    var contentHPT = readOrDie(
