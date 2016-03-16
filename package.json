@@ -3,7 +3,7 @@
 "main": "api.js",
 "bin": "./echolist-csv2hpt.js",
 "preferGlobal": true,
-"version": "1.0.0",
+"version": "1.0.1",
 "description": "Copies Fidonet echomail area descriptions from a CSV echolist to an HPT areas file.",
 "keywords": ["Fidonet", "echomail", "echolist", "HPT", "area", "areas", "echoes"],
 "author": { "name": "Mithgol the Webmaster" },
@@ -13,7 +13,7 @@
    "url": "https://github.com/Mithgol/echolist-csv2hpt.git"
 },
 "dependencies": {
-   "iconv-lite": "0.4.11"
+   "iconv-lite": "~0.4.13"
 },
 "scripts": {
    "test": "jshint --verbose echolist-csv2hpt.js api.js"
