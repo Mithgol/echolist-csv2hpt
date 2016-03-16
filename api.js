@@ -1,14 +1,13 @@
 var fs = require('fs');
 var path = require('path');
-
-require('iconv-lite').extendNodeEncodings();
+var iconv = require('iconv-lite');
 
 var clog = console.log;
 
 // tribute to the “R.O.D” 2001—2002 anime OVA
 var readOrDie = function(filename, encoding, rusMode){
    try {
-      return fs.readFileSync(filename, {encoding: encoding});
+      return iconv.decode( fs.readFileSync(filename), encoding );
    } catch(err) {
       clog('');
       if( rusMode ){
@@ -23,7 +22,7 @@ var readOrDie = function(filename, encoding, rusMode){
 
 var writeOrDie = function(filename, content, encoding, rusMode){
    try {
-      fs.writeFileSync(filename, content, {encoding: encoding});
+      fs.writeFileSync(filename, iconv.encode(content, encoding));
    } catch(err) {
       clog('');
       if( rusMode ){
